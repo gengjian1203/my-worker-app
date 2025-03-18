@@ -4,7 +4,7 @@ import { genResponse } from "../../utils/genResponse";
 export async function handleContact(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const { method, body, headers } = request;
 
-  console.log("handleContact", request);
+  console.log("handleContact 请求开始处理", method, request.url);
 
   try {
     // 检查请求频率限制
@@ -27,20 +27,55 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
 
     // 简单的联系表单处理逻辑
     if (method === "POST") {
-      const formData = await request.json();
+      console.log("处理POST请求");
+      
+      // 检查请求类型和内容
+      console.log("请求Content-Type:", headers.get("Content-Type"));
+      
+      let formData;
+      try {
+        formData = await request.json();
+        console.log("解析的请求数据:", JSON.stringify(formData));
+      } catch (parseError) {
+        console.error("解析请求数据失败:", parseError);
+        return genResponse({
+          status: 400,
+          data: {
+            message: "INVALID_JSON",
+            error: parseError instanceof Error ? parseError.message : "Unknown parsing error"
+          },
+        });
+      }
+      
       const { name = "", email = "", message = "" } = formData as { name: string; email: string; message: string };
 
-      console.log("handleContact formData", formData);
+      console.log("处理表单数据:", { name, email, message });
 
       if (!name || !email || !message) {
+        console.log("表单数据验证失败: 缺少必要字段");
         return genResponse({
           status: 400,
           data: {
             message: "INVALID_REQUEST",
+            details: { name: !name, email: !email, message: !message }
           },
         });
       }
+      
+      // 检查环境变量
+      console.log("检查环境变量", {
+        hasNodemailerUser: !!env.NODEMAILER_USER,
+        hasNodemailerPassword: !!env.NODEMAILER_PASSWORD,
+        hasContactToEmail: !!env.CONTACT_TO_EMAIL,
+        hasResendApiKey: !!env.RESEND_API_KEY
+      });
+      
       if (!env.NODEMAILER_USER || !env.NODEMAILER_PASSWORD || !env.CONTACT_TO_EMAIL) {
+        console.error("环境变量缺失", {
+          NODEMAILER_USER: !env.NODEMAILER_USER ? "缺失" : "存在",
+          NODEMAILER_PASSWORD: !env.NODEMAILER_PASSWORD ? "缺失" : "存在",
+          CONTACT_TO_EMAIL: !env.CONTACT_TO_EMAIL ? "缺失" : "存在"
+        });
         return genResponse({
           status: 500,
           data: {
@@ -49,41 +84,83 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         });
       }
 
-      const resend = new Resend(env.RESEND_API_KEY);
-      const toEmails = JSON.parse(env.CONTACT_TO_EMAIL);
-
-      const resEmail = await resend.emails.send({
-        from: "gengjian@slexmb.wecom.work",
-        to: toEmails,
-        subject: "[Contact] - Test Email",
-        html: `<div>
-          <h1>Contact Form</h1>
-          <p>Name: ${name}</p>
-          <p>Email: ${email}</p>
-          <p>Message: ${message}</p>
-        </div>`,
-      });
-      const { data, error } = resEmail || {};
-
-      // 这里可以添加表单验证和处理逻辑
-      if (error === null) {
+      console.log("准备解析CONTACT_TO_EMAIL");
+      let toEmails;
+      try {
+        toEmails = JSON.parse(env.CONTACT_TO_EMAIL);
+        console.log("解析的收件人邮箱:", toEmails);
+      } catch (jsonError) {
+        console.error("CONTACT_TO_EMAIL JSON解析错误:", jsonError, env.CONTACT_TO_EMAIL);
         return genResponse({
-          status: 200,
+          status: 500,
           data: {
-            message: "SUCCESS",
+            message: "CONTACT_TO_EMAIL_PARSE_ERROR",
+            error: jsonError instanceof Error ? jsonError.message : "Unknown JSON parse error"
           },
         });
       }
 
-      return genResponse({
-        status: 500,
-        data: {
-          message: "FAILED",
-          error,
-        },
-      });
+      console.log("准备发送邮件");
+      try {
+        if (!env.RESEND_API_KEY) {
+          console.error("RESEND_API_KEY 缺失");
+          return genResponse({
+            status: 500,
+            data: {
+              message: "RESEND_API_KEY_MISSING",
+            },
+          });
+        }
+
+        const resend = new Resend(env.RESEND_API_KEY);
+        console.log("使用的发件人:", "gengjian@slexmb.wecom.work", "收件人:", toEmails);
+        
+        const resEmail = await resend.emails.send({
+          from: "gengjian@slexmb.wecom.work",
+          to: toEmails,
+          subject: "[Contact] - Test Email",
+          html: `<div>
+            <h1>Contact Form</h1>
+            <p>Name: ${name}</p>
+            <p>Email: ${email}</p>
+            <p>Message: ${message}</p>
+          </div>`,
+        });
+        
+        console.log("邮件发送结果:", JSON.stringify(resEmail));
+        const { data, error } = resEmail || {};
+
+        if (error === null) {
+          console.log("邮件发送成功");
+          return genResponse({
+            status: 200,
+            data: {
+              message: "SUCCESS",
+            },
+          });
+        }
+
+        console.error("邮件发送失败:", error);
+        return genResponse({
+          status: 500,
+          data: {
+            message: "EMAIL_SEND_FAILED",
+            error,
+          },
+        });
+      } catch (emailError) {
+        console.error("发送邮件过程中发生错误:", emailError);
+        return genResponse({
+          status: 500,
+          data: {
+            message: "EMAIL_ERROR",
+            error: emailError instanceof Error ? emailError.message : "Unknown email error"
+          },
+        });
+      }
     }
 
+    console.log("不支持的HTTP方法:", method);
     return genResponse({
       status: 405,
       data: {
@@ -91,10 +168,12 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
       },
     });
   } catch (error) {
+    console.error("处理请求过程中发生未捕获的错误:", error);
     return genResponse({
       status: 500,
       data: {
         message: "FAILED",
+        error: error instanceof Error ? error.message : "Unknown error"
       },
     });
   }

@@ -2,14 +2,26 @@ name = "my-worker-app"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
+# KV 命名空间
+# 重要：部署前需要创建KV命名空间并更新此ID
+# 可以通过Cloudflare Workers控制台创建，或使用wrangler命令：
+# wrangler kv:namespace create "RATE_LIMIT"
 kv_namespaces = [
   { binding = "RATE_LIMIT", id = "your-kv-namespace-id" }
 ]
 
+# 环境变量
 [vars]
-# 在部署时，需要设置实际的API密钥
-API_SECRET = "your-api-secret"
-RESEND_API_KEY = "your-resend-api-key" 
-CONTACT_TO_EMAIL = "['aaa', 'bbb']"
-NODEMAILER_USER = "your-nodemailer_user"
-NODEMAILER_PASSWORD = "your-nodemailer_password"
+# 重要：部署到生产环境前，请更新这些变量
+# 可以在Cloudflare控制台的Workers部分设置环境变量，或使用wrangler secret命令
+API_SECRET = ""
+RESEND_API_KEY = ""
+CONTACT_TO_EMAIL = "[]"
+NODEMAILER_USER = ""
+NODEMAILER_PASSWORD = ""
+
+# 本地开发环境变量在.dev.vars文件中配置
+# 生产环境请使用wrangler secret来设置敏感信息：
+# wrangler secret put RESEND_API_KEY
+# wrangler secret put NODEMAILER_PASSWORD
+# 等等...

@@ -13,6 +13,7 @@
 
 import { handleContact as handleV1Contact } from "./routes/v1/contact";
 import { handleProducts as handleV1Products } from "./routes/v1/products";
+import { handleTest as handleV1Test } from "./routes/v1/test";
 import { handleUsers as handleV1Users } from "./routes/v1/users";
 
 interface Env {
@@ -29,6 +30,8 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    console.log("收到请求：", request.method, url.pathname);
+
     // 验证签名
     // if (!verifySignature(request, env.API_SECRET)) {
     // 	return new Response(JSON.stringify({ error: 'Invalid signature' }), {
@@ -38,6 +41,10 @@ export default {
     // }
 
     // 路由处理
+    if (url.pathname.startsWith("/v1/test")) {
+      return handleV1Test(request, env, ctx);
+    }
+
     if (url.pathname.startsWith("/v1/contact")) {
       return handleV1Contact(request, env, ctx);
     }
