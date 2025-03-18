@@ -11,7 +11,7 @@
     "enabled": true
   },
   "vars": {
-    "CONTACT_TO_EMAIL": ["187076081@qq.com", "317011131@qq.com"],
+    "CONTACT_TO_EMAIL": "[\"187076081@qq.com\", \"317011131@qq.com\"]"
   }
   /**
    * Smart Placement
