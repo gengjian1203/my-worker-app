@@ -28,10 +28,10 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
     // 简单的联系表单处理逻辑
     if (method === "POST") {
       console.log("处理POST请求");
-      
+
       // 检查请求类型和内容
       console.log("请求Content-Type:", headers.get("Content-Type"));
-      
+
       let formData;
       try {
         formData = await request.json();
@@ -42,11 +42,11 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
           status: 400,
           data: {
             message: "INVALID_JSON",
-            error: parseError instanceof Error ? parseError.message : "Unknown parsing error"
+            error: parseError instanceof Error ? parseError.message : "Unknown parsing error",
           },
         });
       }
-      
+
       const { name = "", email = "", message = "" } = formData as { name: string; email: string; message: string };
 
       console.log("处理表单数据:", { name, email, message });
@@ -57,25 +57,14 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
           status: 400,
           data: {
             message: "INVALID_REQUEST",
-            details: { name: !name, email: !email, message: !message }
+            details: { name: !name, email: !email, message: !message },
           },
         });
       }
-      
-      // 检查环境变量
-      console.log("检查环境变量", {
-        hasNodemailerUser: !!env.NODEMAILER_USER,
-        hasNodemailerPassword: !!env.NODEMAILER_PASSWORD,
-        hasContactToEmail: !!env.CONTACT_TO_EMAIL,
-        hasResendApiKey: !!env.RESEND_API_KEY
-      });
-      
-      if (!env.NODEMAILER_USER || !env.NODEMAILER_PASSWORD || !env.CONTACT_TO_EMAIL) {
-        console.error("环境变量缺失", {
-          NODEMAILER_USER: !env.NODEMAILER_USER ? "缺失" : "存在",
-          NODEMAILER_PASSWORD: !env.NODEMAILER_PASSWORD ? "缺失" : "存在",
-          CONTACT_TO_EMAIL: !env.CONTACT_TO_EMAIL ? "缺失" : "存在"
-        });
+
+      if (!env.CONTACT_TO_EMAIL || !env.RESEND_API_KEY) {
+        console.log(`环境变量缺失 hasContactToEmail: ${!!env.CONTACT_TO_EMAIL}, hasResendApiKey: ${!!env.RESEND_API_KEY}`);
+
         return genResponse({
           status: 500,
           data: {
@@ -84,7 +73,6 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         });
       }
 
-      console.log("准备解析CONTACT_TO_EMAIL");
       let toEmails;
       try {
         toEmails = JSON.parse(env.CONTACT_TO_EMAIL);
@@ -95,7 +83,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
           status: 500,
           data: {
             message: "CONTACT_TO_EMAIL_PARSE_ERROR",
-            error: jsonError instanceof Error ? jsonError.message : "Unknown JSON parse error"
+            error: jsonError instanceof Error ? jsonError.message : "Unknown JSON parse error",
           },
         });
       }
@@ -114,7 +102,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
 
         const resend = new Resend(env.RESEND_API_KEY);
         console.log("使用的发件人:", "gengjian@slexmb.wecom.work", "收件人:", toEmails);
-        
+
         const resEmail = await resend.emails.send({
           from: "gengjian@slexmb.wecom.work",
           to: toEmails,
@@ -126,7 +114,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
             <p>Message: ${message}</p>
           </div>`,
         });
-        
+
         console.log("邮件发送结果:", JSON.stringify(resEmail));
         const { data, error } = resEmail || {};
 
@@ -154,7 +142,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
           status: 500,
           data: {
             message: "EMAIL_ERROR",
-            error: emailError instanceof Error ? emailError.message : "Unknown email error"
+            error: emailError instanceof Error ? emailError.message : "Unknown email error",
           },
         });
       }
@@ -173,7 +161,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
       status: 500,
       data: {
         message: "FAILED",
-        error: error instanceof Error ? error.message : "Unknown error"
+        error: error instanceof Error ? error.message : "Unknown error",
       },
     });
   }
