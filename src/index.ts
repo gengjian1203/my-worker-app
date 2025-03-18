@@ -15,6 +15,7 @@ import { handleContact as handleV1Contact } from "./routes/v1/contact";
 import { handleProducts as handleV1Products } from "./routes/v1/products";
 import { handleTest as handleV1Test } from "./routes/v1/test";
 import { handleUsers as handleV1Users } from "./routes/v1/users";
+import { genResponse } from "./utils/genResponse";
 
 interface Env {
   // 在这里定义环境变量
@@ -26,11 +27,33 @@ interface Env {
   NODEMAILER_PASSWORD: string;
 }
 
+// 处理CORS的辅助函数
+function handleCors(request: Request): Response | null {
+  // 处理预检请求
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }
+  return null;
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     console.log("收到请求：", request.method, url.pathname);
+
+    // 处理CORS预检请求
+    const corsResponse = handleCors(request);
+    if (corsResponse) {
+      return corsResponse;
+    }
 
     // 验证签名
     // if (!verifySignature(request, env.API_SECRET)) {
@@ -58,9 +81,11 @@ export default {
     }
 
     // 404 处理
-    return new Response(JSON.stringify({ error: "Not Found" }), {
+    return genResponse({
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      data: {
+        message: "NOT_FOUND",
+      },
     });
   },
 } satisfies ExportedHandler<Env>;
