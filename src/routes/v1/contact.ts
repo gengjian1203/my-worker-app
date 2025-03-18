@@ -106,7 +106,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         const resEmail = await resend.emails.send({
           from: "jian.geng@orz2.online",
           to: toEmails,
-          subject: "[Contact] - Contact Email",
+          subject: "[SSG] - Contact Email",
           html: `<div>
             <h1>Contact Form</h1>
             <p>Name: ${name}</p>

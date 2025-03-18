@@ -6,7 +6,8 @@
 
 - [1. Cloudflare Workers 入门指南](https://developers.cloudflare.com/workers/get-started/guide/)
 - [2. Cloudflare Workers Env](https://developers.cloudflare.com/workers/configuration/environment-variables/)
-- [3. Zoho Mail](https://mailadmin.zoho.com/)
+- [3. Resend](https://resend.com/)
+- [4. Zoho Mail](https://mailadmin.zoho.com/)
 
 ## 本地开发
 
