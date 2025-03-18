@@ -49,6 +49,21 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         });
       }
 
+      let toEmails = [];
+      try {
+        toEmails = JSON.parse(env.CONTACT_TO_EMAIL);
+        console.log("解析的收件人邮箱:", toEmails);
+      } catch (jsonError) {
+        console.error("CONTACT_TO_EMAIL JSON解析错误:", jsonError, env.CONTACT_TO_EMAIL);
+        return genResponse({
+          status: 500,
+          data: {
+            message: "CONTACT_TO_EMAIL_PARSE_ERROR",
+            error: jsonError instanceof Error ? jsonError.message : "Unknown JSON parse error",
+          },
+        });
+      }
+
       const sendEmail = await nodemailer.createTransport({
         host: "smtp.qq.com", //SMTP服务器地址
         port: 465, //端口号，通常为465，587，994，不同的邮件客户端端口号可能不一样

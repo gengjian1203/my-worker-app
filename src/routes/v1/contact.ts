@@ -73,7 +73,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         });
       }
 
-      let toEmails;
+      let toEmails = [];
       try {
         toEmails = JSON.parse(env.CONTACT_TO_EMAIL);
         console.log("解析的收件人邮箱:", toEmails);
@@ -101,12 +101,12 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         }
 
         const resend = new Resend(env.RESEND_API_KEY);
-        console.log("使用的发件人:", "gengjian@slexmb.wecom.work", "收件人:", toEmails);
+        console.log("使用的发件人:", "jian.geng@orz2.online", "收件人:", toEmails);
 
         const resEmail = await resend.emails.send({
-          from: "gengjian@slexmb.wecom.work",
+          from: "jian.geng@orz2.online",
           to: toEmails,
-          subject: "[Contact] - Test Email",
+          subject: "[Contact] - Contact Email",
           html: `<div>
             <h1>Contact Form</h1>
             <p>Name: ${name}</p>
