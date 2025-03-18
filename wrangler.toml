@@ -14,9 +14,9 @@ kv_namespaces = [
 [vars]
 # 重要：部署到生产环境前，请更新这些变量
 # 可以在Cloudflare控制台的Workers部分设置环境变量，或使用wrangler secret命令
-API_SECRET = ""
-RESEND_API_KEY = ""
-CONTACT_TO_EMAIL = "[]"
+# API_SECRET = ""
+# RESEND_API_KEY = ""
+CONTACT_TO_EMAIL = ["187076081@qq.com", "317011131@qq.com"]
 NODEMAILER_USER = ""
 NODEMAILER_PASSWORD = ""
 
