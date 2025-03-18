@@ -2,7 +2,7 @@ export function genResponse(params: {
   status?: number;
   headers?: Record<string, string>;
   data?: {
-    code: string;
+    message: string;
     [key: string]: any;
   };
 }) {
@@ -10,9 +10,12 @@ export function genResponse(params: {
     status = 200,
     headers = { "Content-Type": "application/json" },
     data = {
-      code: "SUCCESS",
+      code: 200,
+      message: "SUCCESS",
     },
   } = params || {};
+
+  data.code = status;
 
   return new Response(JSON.stringify(data), {
     status,

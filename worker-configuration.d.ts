@@ -4,4 +4,7 @@ interface Env {
 	RATE_LIMIT: KVNamespace;
 	API_SECRET: string;
 	RESEND_API_KEY: string;
+	CONTACT_TO_EMAIL: string;
+	NODEMAILER_USER: string;
+	NODEMAILER_PASSWORD: string;
 }

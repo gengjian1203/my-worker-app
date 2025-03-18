@@ -15,6 +15,7 @@
     "@types/react": "^19.0.11",
     "@types/react-dom": "^19.0.4",
     "blueimp-md5": "^2.19.0",
+    "nodemailer": "^6.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^4.1.2"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.7.5",
     "@cloudflare/workers-types": "^4.20250313.0",
+    "@types/nodemailer": "^6.4.17",
     "@vitest/runner": "^3.0.9",
     "@vitest/snapshot": "^3.0.9",
     "prettier": "^3.2.5",

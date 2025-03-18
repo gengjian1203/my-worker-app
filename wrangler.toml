@@ -10,3 +10,6 @@ kv_namespaces = [
 # 在部署时，需要设置实际的API密钥
 API_SECRET = "your-api-secret"
 RESEND_API_KEY = "your-resend-api-key" 
+CONTACT_TO_EMAIL = "['aaa', 'bbb']"
+NODEMAILER_USER = "your-nodemailer_user"
+NODEMAILER_PASSWORD = "your-nodemailer_password"

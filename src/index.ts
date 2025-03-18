@@ -11,15 +11,18 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-import { handleContact } from "./routes/contact";
-import { handleProducts } from "./routes/products";
-import { handleUsers } from "./routes/users";
+import { handleContact as handleV1Contact } from "./routes/v1/contact";
+import { handleProducts as handleV1Products } from "./routes/v1/products";
+import { handleUsers as handleV1Users } from "./routes/v1/users";
 
 interface Env {
   // 在这里定义环境变量
   API_SECRET: string;
   RATE_LIMIT: KVNamespace;
   RESEND_API_KEY: string;
+  CONTACT_TO_EMAIL: string[];
+  NODEMAILER_USER: string;
+  NODEMAILER_PASSWORD: string;
 }
 
 export default {
@@ -36,15 +39,15 @@ export default {
 
     // 路由处理
     if (url.pathname.startsWith("/v1/contact")) {
-      return handleContact(request, env, ctx);
+      return handleV1Contact(request, env, ctx);
     }
 
     if (url.pathname.startsWith("/v1/api/users")) {
-      return handleUsers(request, env, ctx);
+      return handleV1Users(request, env, ctx);
     }
 
     if (url.pathname.startsWith("/v1/api/products")) {
-      return handleProducts(request, env, ctx);
+      return handleV1Products(request, env, ctx);
     }
 
     // 404 处理
