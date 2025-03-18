@@ -17,10 +17,10 @@ import { handleUsers as handleV1Users } from "./routes/v1/users";
 
 interface Env {
   // 在这里定义环境变量
-  API_SECRET: string;
   RATE_LIMIT: KVNamespace;
+  API_SECRET: string;
   RESEND_API_KEY: string;
-  CONTACT_TO_EMAIL: string[];
+  CONTACT_TO_EMAIL: string;
   NODEMAILER_USER: string;
   NODEMAILER_PASSWORD: string;
 }
