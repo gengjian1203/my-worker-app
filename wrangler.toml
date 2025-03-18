@@ -4,4 +4,9 @@ compatibility_date = "2024-01-01"
 
 kv_namespaces = [
   { binding = "RATE_LIMIT", id = "your-kv-namespace-id" }
-] 
+]
+
+[vars]
+# 在部署时，需要设置实际的API密钥
+API_SECRET = "your-api-secret"
+RESEND_API_KEY = "your-resend-api-key" 

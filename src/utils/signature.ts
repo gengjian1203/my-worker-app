@@ -19,11 +19,9 @@ export function verifySignature(request: Request, secret: string): boolean {
   const body = request.body;
   if (!body) return false;
 
-  // 计算签名
+  // 计算签名 - md5 直接返回 hex 字符串
   const message = `${timestamp}${body}`;
-  const hmac = md5(message);
-  hmac.update(message);
-  const calculatedSignature = hmac.digest("hex");
+  const calculatedSignature = md5(message);
 
   // 比较签名
   return calculatedSignature === signature;

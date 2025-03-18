@@ -10,7 +10,7 @@ let users: User[] = [
   { id: "2", name: "李四", email: "lisi@example.com" },
 ];
 
-export async function handleUsers(request: Request): Promise<Response> {
+export async function handleUsers(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const method = request.method;
   const url = new URL(request.url);
   const userId = url.pathname.split("/").pop();

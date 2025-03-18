@@ -11,7 +11,7 @@ let products: Product[] = [
   { id: "2", name: "商品2", price: 199.99, description: "这是商品2的描述" },
 ];
 
-export async function handleProducts(request: Request): Promise<Response> {
+export async function handleProducts(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const method = request.method;
   const url = new URL(request.url);
   const productId = url.pathname.split("/").pop();
