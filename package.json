@@ -2,7 +2,6 @@
   "name": "my-worker-app",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "yarn@4.7.0",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",

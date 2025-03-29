@@ -47,17 +47,17 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         });
       }
 
-      const { name = "", email = "", message = "" } = formData as { name: string; email: string; message: string };
+      const { firstName = "", lastName = "", email = "" } = formData as { firstName: string; lastName: string; email: string };
 
-      console.log("处理表单数据:", { name, email, message });
+      console.log("处理表单数据:", { firstName, lastName, email });
 
-      if (!name || !email || !message) {
+      if (!firstName || !lastName || !email) {
         console.log("表单数据验证失败: 缺少必要字段");
         return genResponse({
           status: 400,
           data: {
             message: "INVALID_REQUEST",
-            details: { name: !name, email: !email, message: !message },
+            details: { firstName: !!firstName, lastName: !!lastName, email: !!email },
           },
         });
       }
@@ -69,6 +69,7 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
           status: 500,
           data: {
             message: "ENV_ERROR",
+            details: { CONTACT_TO_EMAIL: !!env.CONTACT_TO_EMAIL, RESEND_API_KEY: !!env.RESEND_API_KEY },
           },
         });
       }
@@ -106,12 +107,12 @@ export async function handleContact(request: Request, env: Env, ctx: ExecutionCo
         const resEmail = await resend.emails.send({
           from: "jian.geng@orz2.online",
           to: toEmails,
-          subject: "[SSG] - Contact Email",
+          subject: " [Slate] - Contact Email",
           html: `<div>
             <h1>Contact Form</h1>
-            <p>Name: ${name}</p>
+            <p>First Name: ${firstName}</p>
+            <p>Last Name: ${lastName}</p>
             <p>Email: ${email}</p>
-            <p>Message: ${message}</p>
           </div>`,
         });
 

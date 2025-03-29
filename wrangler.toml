@@ -1,0 +1,7 @@
+name = "my-worker-app"
+
+# 将环境变量都放在 [vars] 下
+[vars]
+NODE_VERSION = "18.18.0"
+YARN_VERSION = "1.22.0"
+"CONTACT_TO_EMAIL": "[\"187076081@qq.com\", \"317011131@qq.com\"]"
